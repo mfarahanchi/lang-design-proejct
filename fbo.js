@@ -29,7 +29,7 @@ function Person(name, age) {
         return function() {
           if (message.getAttr()["new"])
             return _name + " (" + message.getBhv()["length"](_name) + ")";
-          return _name;
+          return _name + " (old one)";
         };
 
       case "get-age":
@@ -38,7 +38,6 @@ function Person(name, age) {
         };
 
       default:
-        console.log("30,", message.name);
         console.log("No message implemented");
     }
   };
@@ -49,7 +48,7 @@ function Student(name, age, grades) {
   let base = Person(name, age);
 
   return function(message) {
-    switch (message) {
+    switch (message.getName()) {
       case "get-grades":
         return function() {
           return _grades;
@@ -68,14 +67,13 @@ function Student(name, age, grades) {
         };
 
       default:
-        // console.log("49,", message);
         return base(message);
     }
   };
 }
 
 const johnny = Person("Johnny", 42);
-// const carlos = Student("Carlos", 22, grades);
+const carlos = Student("Carlos", 22, grades);
 
 const mesJohn = new Message(
   "get-name",
@@ -86,8 +84,13 @@ const mesJohn = new Message(
     }
   }
 );
-console.log(johnny(mesJohn)()); // Outputs: 'Johnny'
-// console.log(carlos("get-name")()); // Outputs: 'Carlos' (Polymorphism)
 
-// console.log(johnny("get-best-grade")); // Outputs on console: 'No message implemented'
-// console.log(carlos("get-best-grade")()); // Outputs: 19.5
+const mesCarl = new Message("get-name", { new: false }, {});
+console.log(johnny(mesJohn)()); // Outputs: 'Johnny'
+console.log(carlos(mesCarl)()); // Outputs: 'Carlos' (Polymorphism)
+
+const mesJohn2 = new Message("get-best-grade", {}, {});
+const mesCarl2 = new Message("get-best-grade", {}, {});
+
+console.log(johnny(mesJohn2)); // Outputs on console: 'No message implemented'
+console.log(carlos(mesCarl2)()); // Outputs: 19.5
